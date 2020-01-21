@@ -12,7 +12,7 @@ use Random\Application\Environment;
  * Class Application
  * @package Random
  */
-final class Application implements ApplicationInterface
+final class Application
 {
     /**
      * Donenv instance
@@ -43,24 +43,21 @@ final class Application implements ApplicationInterface
     private static $instance;
 
     /**
+     * Time when instance was created (sec with microseconds)
+     *
+     * @var float
+     */
+    private $createdTime;
+
+    /**
      * Singleton instance getter
      *
      * @param string|null $path
      * @return Application
      */
-    public static function getInstance(string $path): Application
+    public static function getInstance(?string $path = null): Application
     {
         return static::$instance ?: static::$instance = new self($path);
-    }
-
-    /**
-     * Environment getter
-     *
-     * @inheritDoc
-     */
-    public function getEnvironment(): Dotenv
-    {
-        return $this->environment;
     }
 
     /**
@@ -89,15 +86,15 @@ final class Application implements ApplicationInterface
     public function process(string $algorithmName): void
     {
         try {
+            // Reduce max coordinates (- 1), because Environment::WIDTH & Environment::HEIGHT located outside a canvas
             $algorithm = AlgorithmStaticFactory::factory(
                 $algorithmName,
                 $this->environment->get(Environment::WIDTH) - 1,
                 $this->environment->get(Environment::HEIGHT) - 1
             );
 
-            foreach ($algorithm->sequence() as $coordinates) {
-                $this->image->drawPoint($coordinates[0], $coordinates[1]);
-            }
+            $this->image->drawNoise($algorithm);
+            $this->image->drawText("Generated at {$this->getLifeTime()}sec by {$algorithmName}");
 
             $this->response(200);
         } catch (Exception $e) {
@@ -106,11 +103,23 @@ final class Application implements ApplicationInterface
     }
 
     /**
+     * Get time, left from instance created (sec with microseconds )
+     *
+     * @return float
+     */
+    private function getLifeTime()
+    {
+        return round(microtime(true) - $this->createdTime, 5);
+    }
+
+    /**
      * App constructor.
      * @param string $path
      */
     private function __construct(string $path)
     {
+        $this->createdTime = microtime(true);
+
         $this->path = $path;
         $this->environment = new Environment($path);
 
@@ -118,8 +127,18 @@ final class Application implements ApplicationInterface
             $this->environment->get(Environment::WIDTH),
             $this->environment->get(Environment::HEIGHT),
             $this->environment->get(Environment::IMAGE_BACKGROUND_COLOR),
-            $this->environment->get(Environment::IMAGE_NOISE_PIXEL_COLOR)
+            $this->environment->get(Environment::IMAGE_NOISE_PIXEL_COLOR),
+            $this->environment->get(Environment::IMAGE_TEXT_COLOR),
+            $this->environment->get(Environment::PADDING)
         );
+    }
+
+    /**
+     * @return string
+     */
+    public function getPath(): string
+    {
+        return $this->path;
     }
 
     /** @noinspection PhpUnusedPrivateMethodInspection */

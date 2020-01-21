@@ -13,17 +13,27 @@ use Exception;
  */
 final class Environment
 {
+    /**
+     * String constants contains variables names in .env file
+     */
     const WIDTH                   = "WIDTH";
     const HEIGHT                  = "HEIGHT";
+    const PADDING                 = "PADDING";
     const IMAGE_NOISE_PIXEL_COLOR = "IMAGE_NOISE_PIXEL_COLOR";
     const IMAGE_BACKGROUND_COLOR  = "IMAGE_BACKGROUND_COLOR";
+    const IMAGE_TEXT_COLOR        = "IMAGE_TEXT_COLOR";
 
     const REGEX_HEX_COLOR = "/^#[a-fA-F0-9]{6}$/";
 
     /**
      * Required integer variables in .env file
      */
-    private const REQUIRED_ENVIRONMENT_INTEGER = [self::WIDTH, self::HEIGHT];
+    private const REQUIRED_ENVIRONMENT_INTEGER = [self::WIDTH, self::HEIGHT, self::PADDING];
+
+    /**
+     * Required string color variables in .env file
+     */
+    private const REQUIRED_ENVIRONMENT_COLOR = [self::IMAGE_NOISE_PIXEL_COLOR, self::IMAGE_BACKGROUND_COLOR, self::IMAGE_TEXT_COLOR];
 
     /**
      * Key-value pair storage to keep .env file variables
@@ -48,7 +58,7 @@ final class Environment
     {
         try {
             $this->dotEnv->required(static::REQUIRED_ENVIRONMENT_INTEGER)->isInteger();
-            $this->dotEnv->required(static::IMAGE_NOISE_PIXEL_COLOR)->allowedRegexValues(static::REGEX_HEX_COLOR);
+            $this->dotEnv->required(static::REQUIRED_ENVIRONMENT_COLOR)->allowedRegexValues(static::REGEX_HEX_COLOR);
         } catch (Exception $e) {
             echo $e->getMessage();
             exit;

@@ -14,7 +14,7 @@ use Generator;
  *
  * @package Random\Algorithm
  */
-class RandomInt extends AbstractAlgorithm
+final class RandomInt extends AbstractAlgorithm
 {
     /**
      * Return coordinates array on each iteration
