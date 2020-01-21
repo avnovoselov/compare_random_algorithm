@@ -1,0 +1,19 @@
+{
+  "name": "avnovoselov/compare_random_algorithm",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "avnovoselov",
+      "email": "avnovoselov@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^7.1.0",
+    "vlucas/phpdotenv": "^4.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Random\\": "src/"
+    }
+  }
+}
